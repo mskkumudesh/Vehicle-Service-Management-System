@@ -1,0 +1,41 @@
+package lk.ijse.vehicleservice.dto;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lk.ijse.vehicleservice.entity.Status;
+import lombok.*;
+
+import java.sql.Date;
+import java.sql.Time;
+import java.util.List;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+public class BookingDTO {
+    @NotNull(message = "Booking Id is required")
+    @Positive(message = "Booking Id must be greater than 0")
+    @Positive(message = "VehicleId must be greater than 0")
+    @NotNull(message = "VehicleId is required")
+    private int vehicleId;
+    @NotBlank(message = "Vehicle number is required")
+    private String vehicleNumber;
+    @Valid
+    private List<ServiceDTO> serviceDTOS;
+
+    @NotNull(message = "Booking date is required")
+    @FutureOrPresent(message = "Booking date must be today or in the future")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date bookingDate;
+    @NotNull(message = "Booking time is required")
+    @JsonFormat(pattern = "HH:mm")
+    private Time bookingTime;
+    @NotNull(message = "Booking status is required")
+    private Status status;
+}

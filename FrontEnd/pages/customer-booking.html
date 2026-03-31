@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Bookings</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f5f7fa;
+        }
+        .card {
+            border-radius: 12px;
+        }
+        .table th {
+            background-color: #0d6efd;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+
+
+    <div class="card shadow p-4 mb-4">
+        <h4 class="mb-3">Create Booking</h4>
+
+        <form id="bookingForm">
+            <div class="row">
+
+                <div class="col-md-3 mb-3">
+                    <label>Date</label>
+                    <input type="date" id="bookingDate" class="form-control" required>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <label>Time</label>
+                    <input type="time" id="bookingTime" class="form-control" required>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <label>Vehicle</label>
+                    <select id="vehicleId" class="form-control"></select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Services</label>
+                    <div id="serviceCheckboxes" class="border p-2 rounded" style="max-height:150px; overflow-y:auto;"></div>
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn btn-success">Create Booking</button>
+        </form>
+    </div>
+
+
+    <div class="card shadow p-4">
+        <h3 class="mb-4 text-center">📅 My Bookings</h3>
+
+        <table class="table table-bordered text-center">
+            <thead>
+            <tr>
+                <th>Booking ID</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Services</th>
+                <th>Payment</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="bookingTable"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    const BASE_URL = "http://localhost:8080/api/v1";
+    const token = localStorage.getItem("token");
+
+    function loadVehicles() {
+
+        fetch(`${BASE_URL}/vehicle/getAllByUser`,
+            {method: "GET",headers:{
+                "Authorization": "Bearer " + token
+            }}
+        )
+            .then(res => res.json())
+            .then(data => {
+                let select = document.getElementById("vehicleId");
+                select.innerHTML = "";
+
+                data.data.forEach(v => {
+                    select.innerHTML += `<option value="${v.vehicleId}">${v.vehicleNumber}</option>`;
+                });
+            });
+    }
+
+
+    function loadServices() {
+        fetch(`${BASE_URL}/service/getAll`, {method: "GET",headers:{
+                "Authorization": "Bearer " + token
+            }})
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+                let container = document.getElementById("serviceCheckboxes");
+                container.innerHTML = "";
+
+                data.data.forEach(s => {
+                    container.innerHTML += `
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="${s.serviceId}" id="s${s.serviceId}">
+                            <label class="form-check-label" for="s${s.serviceId}">
+                                ${s.serviceName}
+                            </label>
+                        </div>
+                    `;
+                });
+            });
+    }
+
+
+    document.getElementById("bookingForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        let selectedServices = Array.from(
+            document.querySelectorAll("#serviceCheckboxes input:checked")
+        ).map(cb => cb.value);
+
+        const booking = {
+            bookingDate: document.getElementById("bookingDate").value,
+            bookingTime: document.getElementById("bookingTime").value,
+            vehicleId: document.getElementById("vehicleId").value,
+            serviceIds: selectedServices
+        };
+
+        fetch(BASE_URL + "/booking/save", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(booking)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error();
+                return res.text();
+            })
+            .then(() => {
+                alert("✅ Booking Created");
+                document.getElementById("bookingForm").reset();
+                loadBookings();
+            })
+            .catch(() => {
+                alert(" Booking Failed");
+            });
+    });
+
+
+    function loadBookings() {
+
+        fetch(`${BASE_URL}/booking/getAllByUser`, {method: "GET",headers:{
+                "Authorization": "Bearer " + token
+            }})
+            .then(res => res.json())
+            .then(data => {
+                const table = document.getElementById("bookingTable");
+                table.innerHTML = "";
+
+                data.data.forEach(b => {
+
+                    let paidBadge = b.paid
+                        ? `<span class="badge badge-paid">PAID</span>`
+                        : `<span class="badge badge-pending">PENDING</span>`;
+
+                    let payBtn = b.paid
+                        ? `<button class="btn btn-secondary btn-sm" disabled>Paid</button>`
+                        : `<button class="btn btn-primary btn-sm" onclick="goToPayment(${b.bookingId}, ${b.totalAmount})">Pay</button>`;
+
+                    let serviceNames = b.services
+                        ? b.services.map(s => s.serviceName).join(", ")
+                        : "No Services";
+
+                    let row = `
+                        <tr>
+                            <td>${b.bookingId}</td>
+                            <td>${b.bookingDate}</td>
+                            <td>${b.bookingTime}</td>
+                            <td>${b.status}</td>
+                            <td>${serviceNames}</td>
+                            <td>${paidBadge}</td>
+                            <td>${payBtn}</td>
+                        </tr>
+                    `;
+
+                    table.innerHTML += row;
+                });
+            });
+    }
+
+
+    function goToPayment(bookingId, amount) {
+        window.location.href = `/FrontEnd/pages/customer-payment.html?bookingId=${bookingId}&amount=${amount}`;
+    }
+
+
+    loadVehicles();
+    loadServices();
+    loadBookings();
+
+</script>
+
+</body>
+</html>
