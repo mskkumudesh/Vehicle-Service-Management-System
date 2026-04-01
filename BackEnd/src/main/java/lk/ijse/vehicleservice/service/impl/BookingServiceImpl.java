@@ -1,10 +1,14 @@
 package lk.ijse.vehicleservice.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lk.ijse.vehicleservice.dto.BookingDTO;
 import lk.ijse.vehicleservice.entity.Booking;
+import lk.ijse.vehicleservice.entity.Status;
+import lk.ijse.vehicleservice.entity.Vehicle;
 import lk.ijse.vehicleservice.repository.BookingRepository;
+import lk.ijse.vehicleservice.repository.ServiceRepository;
+import lk.ijse.vehicleservice.repository.VehicleRepository;
 import lk.ijse.vehicleservice.service.BookingService;
-import org.hibernate.validator.internal.constraintvalidators.bv.time.future.FutureValidatorForInstant;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,19 +23,31 @@ public class BookingServiceImpl implements BookingService {
     private BookingRepository bookingRepository;
 
     @Autowired
+    private VehicleRepository vehicleRepository;
+
+    @Autowired
+    private ServiceRepository serviceRepository;
+
+    @Autowired
     private ModelMapper modelMapper;
+
+
 
 
     @Override
     public void addBooking(BookingDTO dto) {
 
-        if (bookingRepository.existsByVehicle_VehicleNumberOrBookingDate(
-                dto.getVehicleNumber(), dto.getBookingDate())) {
-            throw new RuntimeException("Vehicle already has a booking on given date");
-        }
-
-        Booking booking = modelMapper.map(dto, Booking.class);
+        Booking booking = new Booking();
+        booking.setBookingDate(dto.getBookingDate());
+        booking.setBookingTime(dto.getBookingTime());
+        booking.setStatus(Status.Pending);
+        Vehicle vehicle = vehicleRepository.findById(dto.getVehicleId())
+                .orElseThrow(() -> new RuntimeException("Vehicle with ID " + dto.getVehicleId() + " not found"));
+        booking.setVehicle(vehicle);
+        booking.setServices(serviceRepository.findAll());
+       // Service services = serviceRepository.createHelper
         bookingRepository.save(booking);
+
     }
 
     @Override

@@ -18,7 +18,7 @@ public class ServiceDTO {
     @NotBlank(message = "Service name is required")
     @Size(min = 4,max = 20,message = "Not a valid service name")
     private String serviceName;
-    @NotBlank(message = "Price is required")
+    @NotNull(message = "Price is required")
     @Positive(message = "Price must be greater than 0 ")
     private Double price;
 }

@@ -19,14 +19,13 @@ import java.util.List;
 @Setter
 @ToString
 public class BookingDTO {
-    @NotNull(message = "Booking Id is required")
     @Positive(message = "Booking Id must be greater than 0")
+    private int bookingId;
     @Positive(message = "VehicleId must be greater than 0")
     @NotNull(message = "VehicleId is required")
     private int vehicleId;
     @NotBlank(message = "Vehicle number is required")
     private String vehicleNumber;
-    @Valid
     private List<ServiceDTO> serviceDTOS;
 
     @NotNull(message = "Booking date is required")
@@ -34,7 +33,6 @@ public class BookingDTO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date bookingDate;
     @NotNull(message = "Booking time is required")
-    @JsonFormat(pattern = "HH:mm")
     private Time bookingTime;
     @NotNull(message = "Booking status is required")
     private Status status;

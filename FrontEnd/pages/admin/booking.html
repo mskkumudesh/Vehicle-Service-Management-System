@@ -113,6 +113,8 @@
         } catch {
             return text;
         }
+
+
     }
 
     // ================= LOAD BOOKINGS =================
@@ -157,19 +159,21 @@
         e.preventDefault();
 
         const booking = {
-            vehicleId: parseInt(document.getElementById("vehicleId").value),
+            vehicleId: document.getElementById("vehicleId").value,
             vehicleNumber: document.getElementById("vehicleNumber").value,
-            bookingDate: document.getElementById("bookingDate").value,
+            bookingDatS: document.getElementById("bookingDate").value,
             bookingTime: document.getElementById("bookingTime").value,
             status: document.getElementById("status").value
         };
+        console.log(booking.bookingDate)
+        console.log(booking.bookingTime)
 
         fetch(BASE_URL + "/save", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(booking)
         })
-            .then(handleResponse)
+
             .then(() => {
                 alert("Booking saved!");
                 loadBookings();

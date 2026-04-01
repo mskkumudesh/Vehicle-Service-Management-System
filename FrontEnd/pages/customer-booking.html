@@ -135,20 +135,18 @@
 
         const booking = {
             bookingDate: document.getElementById("bookingDate").value,
-            bookingTime: document.getElementById("bookingTime").value,
+            bookingTime: document.getElementById("bookingTime").value+":00",
             vehicleId: document.getElementById("vehicleId").value,
-            serviceIds: selectedServices
+            serviceDTOs: selectedServices
         };
+        console.log(booking);
 
-        fetch(BASE_URL + "/booking/save", {
+        fetch(`${BASE_URL}/booking/save`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(booking)
         })
-            .then(res => {
-                if (!res.ok) throw new Error();
-                return res.text();
-            })
+
             .then(() => {
                 alert("✅ Booking Created");
                 document.getElementById("bookingForm").reset();

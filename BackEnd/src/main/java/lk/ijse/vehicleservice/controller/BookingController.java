@@ -20,7 +20,7 @@ public class BookingController {
     private BookingService bookingService;
     @PostMapping("/save")
     public ResponseEntity<APIResponse<String>> addBooking(@RequestBody @Valid BookingDTO bookingDTO) {
-        bookingService.addBooking(bookingDTO);
+          bookingService.addBooking(bookingDTO);
         return new ResponseEntity<>(new APIResponse<>(201,"Booking saved",null), HttpStatus.CREATED);
     }
     @PutMapping("/update")

@@ -28,7 +28,7 @@ async function login() {
             if (userRole === "Customer") {
                 window.location.href = "/FrontEnd/pages/customer-dashboard.html";
             } else if (userRole === "Admin") {
-                window.location.href = "/FrontEnd/pages/admin/dashboard.html";
+                window.location.href = "/FrontEnd/pages/admin/admin-dashboard.html";
             }
         } else {
             alert("Login Failed: " + result.message);
