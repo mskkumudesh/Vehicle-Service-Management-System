@@ -45,7 +45,7 @@
             <a href="/FrontEnd/pages/admin/vehicle.html">Vehicles</a>
             <a href="/FrontEnd/pages/admin/booking.html">Bookings</a>
             <a href="/FrontEnd/pages/admin/payment.html">Payments</a>
-            <a href="/FrontEnd/pages/admin/customer.html">Services</a>
+            <a href="/FrontEnd/pages/admin/service.html">Services</a>
             <a href="/FrontEnd/pages/login.html">Logout</a>
         </div>
 
@@ -98,7 +98,6 @@
                     <thead>
                     <tr>
                         <th>Booking ID</th>
-                        <th>Vehicle ID</th>
                         <th>Vehicle Number</th>
                         <th>Booking Date</th>
                         <th>Booking Time</th>
@@ -135,7 +134,6 @@
                 table.innerHTML += `
                     <tr>
                         <td>${b.bookingId}</td>
-                        <td>${b.vehicleId}</td>
                         <td>${b.vehicleNumber || "N/A"}</td>
                         <td>${b.bookingDate}</td>
                         <td>${b.bookingTime}</td>

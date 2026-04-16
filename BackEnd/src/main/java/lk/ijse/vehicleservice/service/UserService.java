@@ -24,4 +24,6 @@ public interface UserService {
     List<UserDTO> getAllUsers();
 
     UserDTO getUserById(int id);
+
+    boolean isExists(String email);
 }

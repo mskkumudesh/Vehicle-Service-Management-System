@@ -23,7 +23,7 @@
 
 <div class="container mt-5">
 
-
+    <!-- PAYMENT FORM -->
     <div class="card shadow p-4 mb-4">
         <h4 class="mb-3">💳 Complete Payment</h4>
 
@@ -61,7 +61,7 @@
         </form>
     </div>
 
-
+    <!-- PAYMENT TABLE -->
     <div class="card shadow p-4">
         <h4 class="mb-3 text-center">💰 Payment History</h4>
 
@@ -85,33 +85,29 @@
     const BASE_URL = "http://localhost:8080/api/v1/payment";
     const token = localStorage.getItem("token");
 
-
     function loadPaymentDetails() {
         const params = new URLSearchParams(window.location.search);
 
         const bookingId = params.get("bookingId");
         const amount = params.get("amount");
 
-        if (bookingId && amount) {
-            document.getElementById("bookingId").value = bookingId;
-            document.getElementById("amount").value = amount;
+        if (bookingId !== null && amount !== null) {
+            document.getElementById("bookingId").value = parseInt(bookingId);
+            document.getElementById("amount").value = parseFloat(amount);
         }
-
 
         document.getElementById("paymentDate").value =
             new Date().toISOString().split('T')[0];
     }
 
-
+    // LOAD PAYMENT HISTORY
     function loadPayments() {
-
-        fetch(`${BASE_URL}/getAllByUser`,
-            {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
-                })
+        fetch(`${BASE_URL}/getAllByUser`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        })
             .then(res => res.json())
             .then(data => {
 
@@ -120,14 +116,14 @@
 
                 data.data.forEach(p => {
                     let row = `
-                        <tr>
-                            <td>${p.paymentId}</td>
-                            <td>${p.paymentDate}</td>
-                            <td>${p.paymentMethod}</td>
-                            <td>${p.amount}</td>
-                            <td>${p.bookingId}</td>
-                        </tr>
-                    `;
+                    <tr>
+                        <td>${p.paymentId}</td>
+                        <td>${p.paymentDate}</td>
+                        <td>${p.paymentMethod}</td>
+                        <td>${p.amount}</td>
+                        <td>${p.bookingId}</td>
+                    </tr>
+                `;
                     table.innerHTML += row;
                 });
 
@@ -138,21 +134,30 @@
             });
     }
 
-
+    // SUBMIT PAYMENT
     document.getElementById("paymentForm").addEventListener("submit", function (e) {
         e.preventDefault();
+
+        const amountValue = document.getElementById("amount").value;
+
+        // VALIDATION
+        if (!amountValue || isNaN(amountValue)) {
+            alert("❌ Invalid amount!");
+            return;
+        }
 
         const payment = {
             paymentDate: document.getElementById("paymentDate").value,
             paymentMethod: document.getElementById("paymentMethod").value,
-            amount: document.getElementById("amount").value,
-            bookingId: document.getElementById("bookingId").value
+            amount: parseFloat(amountValue),
+            bookingId: parseInt(document.getElementById("bookingId").value)
         };
 
         fetch(BASE_URL + "/save", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
             },
             body: JSON.stringify(payment)
         })
@@ -161,14 +166,12 @@
                 return res.text();
             })
             .then(() => {
-                alert(" Payment Successful");
-
+                alert("✅ Payment Successful");
                 document.getElementById("paymentForm").reset();
-
                 loadPayments();
             })
             .catch(() => {
-                alert("Payment Failed");
+                alert("❌ Payment Failed");
             });
     });
 
@@ -176,10 +179,8 @@
         window.location.href = "customer-booking.html";
     }
 
-
     loadPaymentDetails();
     loadPayments();
-
 </script>
 
 </body>

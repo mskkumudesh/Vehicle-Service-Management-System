@@ -63,4 +63,15 @@ public class ServiceServiceImpl implements ServiceService {
                 return services.stream().map(service -> modelMapper.map(service, ServiceDTO.class))
                 .toList();
     }
+    @Override
+    public List<ServiceDTO> getAllByBooking(String bookingId) {
+
+        int id = Integer.parseInt(bookingId);
+
+        List<Services> services = serviceRepository.findAllByBookings_BookingId(id);
+
+        return services.stream()
+                .map(service -> modelMapper.map(service, ServiceDTO.class))
+                .toList();
+    }
 }

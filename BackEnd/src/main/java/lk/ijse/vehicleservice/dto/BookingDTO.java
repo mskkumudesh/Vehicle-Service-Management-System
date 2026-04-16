@@ -20,13 +20,10 @@ import java.util.List;
 @ToString
 public class BookingDTO {
     @Positive(message = "Booking Id must be greater than 0")
-    private int bookingId;
-    @Positive(message = "VehicleId must be greater than 0")
-    @NotNull(message = "VehicleId is required")
-    private int vehicleId;
+    private Integer bookingId;
     @NotBlank(message = "Vehicle number is required")
     private String vehicleNumber;
-    private List<ServiceDTO> serviceDTOS;
+    private List<ServiceDTO> serviceDTOs;
 
     @NotNull(message = "Booking date is required")
     @FutureOrPresent(message = "Booking date must be today or in the future")
@@ -36,4 +33,5 @@ public class BookingDTO {
     private Time bookingTime;
     @NotNull(message = "Booking status is required")
     private Status status;
+    private Double totalAmount;
 }

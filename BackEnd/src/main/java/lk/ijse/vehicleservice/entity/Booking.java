@@ -30,6 +30,8 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    private Double totalAmount;
+
     @ManyToOne
     @JoinColumn(name = "vehicleId", nullable = false)
     private Vehicle vehicle;
@@ -40,7 +42,7 @@ public class Booking {
             joinColumns = @JoinColumn(name = "bookingId"),
             inverseJoinColumns = @JoinColumn(name = "serviceId")
     )
-    private List<Services> services;
+    private List<Services> serviceDTOs;
 
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
     private Payment payment;

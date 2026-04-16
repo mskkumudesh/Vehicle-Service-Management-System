@@ -10,4 +10,6 @@ public interface ServiceService {
     void deleteService(String id);
     ServiceDTO searchService(String id);
     List<ServiceDTO> getAllServices();
+
+    List<ServiceDTO> getAllByBooking(String bookingId);
 }

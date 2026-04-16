@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class VehicleServiceImpl implements VehicleService {
@@ -24,13 +23,10 @@ public class VehicleServiceImpl implements VehicleService {
     private ModelMapper modelMapper;
 
     @Override
-    public void addVehicle(VehicleDTO dto) {
+    public void addVehicle(String email,VehicleDTO dto) {
 
         if (vehicleRepository.findByVehicleNumber((dto.getVehicleNumber())).isPresent()) {
             throw new RuntimeException("Vehicle already exists");
-        }
-        if (vehicleRepository.findById(dto.getVehicleId()).isPresent()) {
-            throw new RuntimeException("Vehicle already exists with id " + dto.getVehicleId());
         }
 
         Vehicle vehicle = new Vehicle();
@@ -38,22 +34,21 @@ public class VehicleServiceImpl implements VehicleService {
         vehicle.setCategory(dto.getCategory());
         vehicle.setBrand(dto.getBrand());
 
-        User user = userRepository.findById(dto.getUserId()).orElseThrow(()->new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User not found in save"));
         vehicle.setUser(user);
 
         vehicleRepository.save(vehicle);
     }
 
     @Override
-    public void updateVehicle(VehicleDTO dto) {
+    public void updateVehicle(String email,VehicleDTO dto) {
 
         Vehicle vehicle = vehicleRepository.findByVehicleNumber(dto.getVehicleNumber())
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        vehicle.setVehicleId(dto.getVehicleId());
-        vehicle.setVehicleNumber(vehicle.getVehicleNumber());
+                .orElseThrow(() -> new NotFoundException("vehicle not found"));
+        vehicle.setVehicleNumber(dto.getVehicleNumber());
         vehicle.setCategory(dto.getCategory());
         vehicle.setBrand(dto.getBrand());
-        User user = userRepository.findById(dto.getUserId()).orElseThrow(()->new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User not found in update"));
         vehicle.setUser(user);
         vehicleRepository.save(vehicle);
     }
@@ -66,8 +61,8 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public void deleteVehicle(int id) {
-        Vehicle vehicle = vehicleRepository.findById(id)
+    public void deleteVehicle(String vehicleNumber) {
+        Vehicle vehicle = vehicleRepository.findByVehicleNumber(vehicleNumber)
                 .orElseThrow(() -> new NotFoundException("Vehicle not found"));
         vehicleRepository.delete(vehicle);
     }
@@ -79,13 +74,17 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public List<VehicleDTO> getAllVehiclesByUser(String input) {
+    public List<VehicleDTO> getAllVehiclesByUser(String email) {
 
         List<Vehicle> vehicles = vehicleRepository
-                .findAllByUser_EmailOrUser_Username(input, input);
+                .findAllByUser_Email(email);
 
         return vehicles.stream()
                 .map(vehicle -> modelMapper.map(vehicle, VehicleDTO.class))
                 .toList();
+    }
+    @Override
+    public boolean isExists(String vehicleNumber) {
+        return vehicleRepository.findByVehicleNumber(vehicleNumber).isPresent();
     }
 }

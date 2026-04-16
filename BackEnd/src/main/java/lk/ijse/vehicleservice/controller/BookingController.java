@@ -20,12 +20,31 @@ public class BookingController {
     private BookingService bookingService;
     @PostMapping("/save")
     public ResponseEntity<APIResponse<String>> addBooking(@RequestBody @Valid BookingDTO bookingDTO) {
-          bookingService.addBooking(bookingDTO);
-        return new ResponseEntity<>(new APIResponse<>(201,"Booking saved",null), HttpStatus.CREATED);
+        int bookingId;
+        if (bookingDTO.getBookingId() == null) {
+             bookingId = 0;
+        }else{
+            bookingId = bookingDTO.getBookingId();
+        }
+        if (bookingService.isExists(bookingId)) {
+            bookingService.updateBooking(bookingDTO);
+            return new ResponseEntity<>(new APIResponse<>(200,"Booking updated",null), HttpStatus.OK);
+        }
+        else {
+            bookingService.addBooking(bookingDTO);
+            return new ResponseEntity<>(new APIResponse<>(200, "Booking saved", null), HttpStatus.OK);
+        }
     }
     @PutMapping("/update")
     public ResponseEntity<APIResponse<String>> updateBooking(@RequestBody @Valid BookingDTO bookingDTO) {
-        bookingService.updateBooking(bookingDTO);
+
+        try {
+            bookingService.updateBooking(bookingDTO);
+        } catch (Exception e) {
+            System.out.println("ERROR: " + e.getMessage());
+            e.printStackTrace();
+        }
+
         return new ResponseEntity<>(new APIResponse<>(200,"Booking updated",null), HttpStatus.OK);
     }
     @DeleteMapping("/delete/{input}")

@@ -65,6 +65,7 @@
             <thead>
             <tr>
                 <th>Booking ID</th>
+                <th>Vehicle</th>
                 <th>Date</th>
                 <th>Time</th>
                 <th>Status</th>
@@ -101,7 +102,7 @@
             });
     }
 
-
+      let servicesList = [];
     function loadServices() {
         fetch(`${BASE_URL}/service/getAll`, {method: "GET",headers:{
                 "Authorization": "Bearer " + token
@@ -112,11 +113,13 @@
                 let container = document.getElementById("serviceCheckboxes");
                 container.innerHTML = "";
 
+                servicesList = data.data;
+
                 data.data.forEach(s => {
                     container.innerHTML += `
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="${s.serviceId}" id="s${s.serviceId}">
-                            <label class="form-check-label" for="s${s.serviceId}">
+                            <input class="form-check-input" type="checkbox" value="${s.serviceId}" id="${s.serviceId}">
+                            <label class="form-check-label" for="${s.serviceId}">
                                 ${s.serviceName}
                             </label>
                         </div>
@@ -131,15 +134,19 @@
 
         let selectedServices = Array.from(
             document.querySelectorAll("#serviceCheckboxes input:checked")
-        ).map(cb => cb.value);
+        ).map(cb => ({
+            serviceId: parseInt(cb.value)
+        }));
+        let vehicleSelect = document.getElementById("vehicleId");
 
         const booking = {
             bookingDate: document.getElementById("bookingDate").value,
-            bookingTime: document.getElementById("bookingTime").value+":00",
-            vehicleId: document.getElementById("vehicleId").value,
-            serviceDTOs: selectedServices
+            bookingTime: document.getElementById("bookingTime").value + ":00",
+            vehicleId: parseInt(vehicleSelect.value),
+            vehicleNumber: vehicleSelect.options[vehicleSelect.selectedIndex].text,
+            serviceDTOs: selectedServices,
+            status:"Pending"
         };
-        console.log(booking);
 
         fetch(`${BASE_URL}/booking/save`, {
             method: "POST",
@@ -157,7 +164,20 @@
             });
     });
 
+    let paymentsList = [];
 
+    function loadPayments() {
+        fetch(`${BASE_URL}/payment/getAllByUser`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                paymentsList = data.data;
+            });
+    }
     function loadBookings() {
 
         fetch(`${BASE_URL}/booking/getAllByUser`, {method: "GET",headers:{
@@ -170,29 +190,53 @@
 
                 data.data.forEach(b => {
 
-                    let paidBadge = b.paid
-                        ? `<span class="badge badge-paid">PAID</span>`
-                        : `<span class="badge badge-pending">PENDING</span>`;
+                    let isPaid = paymentsList.some(p => p.bookingId === b.bookingId);
 
-                    let payBtn = b.paid
-                        ? `<button class="btn btn-secondary btn-sm" disabled>Paid</button>`
-                        : `<button class="btn btn-primary btn-sm" onclick="goToPayment(${b.bookingId}, ${b.totalAmount})">Pay</button>`;
+                    let paidBadge = "";
+                    let payBtn = "";
 
-                    let serviceNames = b.services
-                        ? b.services.map(s => s.serviceName).join(", ")
+                    if (b.status === "Confirmed") {
+
+                        paidBadge = isPaid
+                            ? `<span class="badge bg-success">PAID</span>`
+                            : `<span class="badge bg-warning">UNPAID</span>`;
+
+                        payBtn = isPaid
+                            ? `<button class="btn btn-secondary btn-sm" disabled>Paid</button>`
+                            : `<button class="btn btn-primary btn-sm" onclick="goToPayment(${b.bookingId}, ${b.totalAmount})">Pay</button>`;
+
+                    } else if (b.status === "Pending") {
+
+                        paidBadge = `<span class="badge bg-warning">WAITING</span>`;
+                        payBtn = `<button class="btn btn-secondary btn-sm" disabled>Not Allowed</button>`;
+
+                    } else if (b.status === "Completed") {
+
+                        paidBadge = `<span class="badge bg-success">DONE</span>`;
+                        payBtn = `<button class="btn btn-secondary btn-sm" disabled>Completed</button>`;
+
+                    } else {
+
+                        paidBadge = `<span class="badge bg-danger">CANCELLED</span>`;
+                        payBtn = `<button class="btn btn-secondary btn-sm" disabled>N/A</button>`;
+                    }
+
+                    let serviceNames = b.serviceDTOs
+                        ? b.serviceDTOs.map(s => s.serviceName).join(", ")
                         : "No Services";
 
                     let row = `
-                        <tr>
-                            <td>${b.bookingId}</td>
-                            <td>${b.bookingDate}</td>
-                            <td>${b.bookingTime}</td>
-                            <td>${b.status}</td>
-                            <td>${serviceNames}</td>
-                            <td>${paidBadge}</td>
-                            <td>${payBtn}</td>
-                        </tr>
-                    `;
+        <tr>
+            <td>${b.bookingId}</td>
+            <td>${b.vehicleNumber}</td>
+            <td>${b.bookingDate}</td>
+            <td>${b.bookingTime}</td>
+            <td>${b.status}</td>
+            <td>${serviceNames}</td>
+            <td>${paidBadge}</td>
+            <td>${payBtn}</td>
+        </tr>
+    `;
 
                     table.innerHTML += row;
                 });
@@ -207,6 +251,7 @@
 
     loadVehicles();
     loadServices();
+    loadPayments();
     loadBookings();
 
 </script>

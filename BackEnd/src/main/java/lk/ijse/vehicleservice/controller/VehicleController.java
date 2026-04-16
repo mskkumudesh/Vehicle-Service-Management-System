@@ -21,20 +21,32 @@ public class VehicleController {
 
 
     @PostMapping("/save")
-    public ResponseEntity<APIResponse<String>> addVehicle(@RequestBody @Valid VehicleDTO dto) {
+    public ResponseEntity<APIResponse<String>> addVehicle( Authentication authentication , @RequestBody @Valid VehicleDTO dto) {
+        String email = authentication.getName();
+        System.out.println(email);
+        System.out.println(vehicleService.isExists(dto.getVehicleNumber()));
 
-        vehicleService.addVehicle(dto);
-
-        return ResponseEntity.ok(
-                new APIResponse<>(200, "Vehicle Added Successfully", null)
-        );
+       if (vehicleService.isExists(dto.getVehicleNumber())) {
+           System.out.println("Vehicle already exists");
+           vehicleService.updateVehicle(email, dto);
+           return ResponseEntity.ok(
+                   new APIResponse<>(200, "Vehicle Updated Successfully", null)
+           );
+       }else {
+           System.out.println(email);
+           vehicleService.addVehicle(email, dto);
+           return ResponseEntity.ok(
+                   new APIResponse<>(201, "Vehicle Added Successfully", null)
+           );
+       }
     }
 
 
     @PutMapping("/update")
-    public ResponseEntity<APIResponse<String>> updateVehicle(@RequestBody @Valid VehicleDTO dto) {
+    public ResponseEntity<APIResponse<String>> updateVehicle(Authentication authentication,@RequestBody @Valid VehicleDTO dto) {
+        String email = authentication.getName();
 
-        vehicleService.updateVehicle(dto);
+        vehicleService.updateVehicle(email,dto);
 
         return ResponseEntity.ok(
                 new APIResponse<>(200, "Vehicle Updated Successfully", null)
@@ -53,10 +65,10 @@ public class VehicleController {
     }
 
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<APIResponse<String>> deleteVehicle(@PathVariable int id) {
+    @DeleteMapping("/delete/{vehicleNumber}")
+    public ResponseEntity<APIResponse<String>> deleteVehicle(@PathVariable String vehicleNumber) {
 
-        vehicleService.deleteVehicle(id);
+        vehicleService.deleteVehicle(vehicleNumber);
 
         return ResponseEntity.ok(
                 new APIResponse<>(200, "Vehicle Deleted Successfully", null)

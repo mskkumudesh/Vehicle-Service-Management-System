@@ -20,7 +20,7 @@ public class ServiceController {
     private ServiceService serviceService;
 
 
-    @PostMapping("/add")
+    @PostMapping("/save")
     public ResponseEntity<APIResponse<String>> addService(@Valid @RequestBody ServiceDTO dto) {
         serviceService.addService(dto);
         return new ResponseEntity<>(
@@ -40,7 +40,7 @@ public class ServiceController {
     }
 
 
-    @DeleteMapping("delete//{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<APIResponse<String>> deleteService(@PathVariable String id) {
         serviceService.deleteService(id);
         return new ResponseEntity<>(
@@ -50,7 +50,7 @@ public class ServiceController {
     }
 
 
-    @GetMapping("search/{id}")
+    @GetMapping("/search/{id}")
     public ResponseEntity<APIResponse<ServiceDTO>> searchService(@PathVariable String id) {
         ServiceDTO service = serviceService.searchService(id);
         return new ResponseEntity<>(
@@ -63,6 +63,14 @@ public class ServiceController {
     @GetMapping("/getAll")
     public ResponseEntity<APIResponse<List<ServiceDTO>>> getAllServices() {
                  List<ServiceDTO> serviceDTOS = serviceService.getAllServices();
+        return new ResponseEntity<>(
+                new APIResponse<>(200, "Success",serviceDTOS ),
+                HttpStatus.OK
+        );
+    }
+    @GetMapping("/getAllByBooking/{bookingId}")
+    public ResponseEntity<APIResponse<List<ServiceDTO>>> getAllByBooking(@PathVariable String bookingId) {
+        List<ServiceDTO> serviceDTOS = serviceService.getAllByBooking(bookingId);
         return new ResponseEntity<>(
                 new APIResponse<>(200, "Success",serviceDTOS ),
                 HttpStatus.OK

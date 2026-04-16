@@ -22,6 +22,6 @@ public class Services {
    @Column(nullable = false)
    private Double price;
 
-    @ManyToMany(mappedBy = "services")
+    @ManyToMany(mappedBy = "serviceDTOs")
     private List<Booking> bookings;
 }

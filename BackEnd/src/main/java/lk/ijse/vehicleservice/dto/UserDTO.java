@@ -12,7 +12,7 @@ import lombok.*;
 @ToString
 public class UserDTO {
     @Positive(message = "User Id must be greater than 0")
-    private int id;
+    private Integer id;
     @NotBlank(message = "Name is required")
     @Size(min = 3,max = 50,message = "Not a valid name")
     private String name;

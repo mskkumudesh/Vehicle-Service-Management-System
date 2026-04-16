@@ -11,5 +11,6 @@ public interface BookingService {
     List<BookingDTO> searchBooking(String input);
     List<BookingDTO> getAllBookings();
     List<BookingDTO> getAllBookingsByUser(String input);
-    List<BookingDTO> getAllBookingsByVehicle(String input);
+
+    boolean isExists(int id);
 }

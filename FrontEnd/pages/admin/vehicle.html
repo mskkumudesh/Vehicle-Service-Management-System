@@ -108,7 +108,8 @@
     }
 
     // SAVE VEHICLE
-    document.getElementById("vehicleForm").addEventListener("submit", function (e) {
+   /*
+   document.getElementById("vehicleForm").addEventListener("submit", function (e) {
         e.preventDefault();
 
         const vehicle = {
@@ -132,7 +133,7 @@
             })
             .catch(err => {alert(err.message)});
     });
-
+*/
     // SELECT VEHICLE
     function selectVehicle(id, number, category, brand, userId) {
         document.getElementById("vehicleId").value = id;
@@ -167,9 +168,9 @@
 
     // DELETE VEHICLE
     function deleteVehicle() {
-        const id = document.getElementById("vehicleId").value;
+        const vehicleNumber = document.getElementById("vehicleNumber").value;
 
-        fetch(BASE_URL + "/delete/" + id, {
+        fetch(`${BASE_URL}/delete/${vehicleNumber}`, {
             method: "DELETE"
         })
             .then(() => {

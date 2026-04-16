@@ -12,9 +12,8 @@ import lombok.*;
 @Setter
 @ToString
 public class ServiceDTO {
-    @NotNull(message = "ServiceId is required")
     @Positive(message = "ServiceId must be greater than 0")
-    private int serviceId;
+    private Integer serviceId;
     @NotBlank(message = "Service name is required")
     @Size(min = 4,max = 20,message = "Not a valid service name")
     private String serviceName;

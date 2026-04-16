@@ -7,15 +7,17 @@ import java.util.List;
 
 public interface VehicleService {
 
-    void addVehicle(VehicleDTO dto);
+    void addVehicle(String email,VehicleDTO dto);
 
-    void updateVehicle(VehicleDTO dto);
+    void updateVehicle(String email,VehicleDTO dto);
 
     VehicleDTO searchVehicle(int id);
 
-    void deleteVehicle(int id);
+    void deleteVehicle(String vehicleNumber);
 
     List<VehicleDTO> getAllVehicles();
 
-    List<VehicleDTO> getAllVehiclesByUser(String input);
+    List<VehicleDTO> getAllVehiclesByUser(String email);
+
+    boolean isExists(String vehicleNumber);
 }

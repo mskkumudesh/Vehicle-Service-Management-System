@@ -24,7 +24,7 @@ public class Payment {
     @NotBlank(message = "Payment method is required")
     private String paymentMethod;
     @NotNull(message = "Amount is required")
-    private double amount;
+    private Double amount;
     @OneToOne
     @JoinColumn(name = "bookingID",nullable = false,unique = true)
     private Booking booking;

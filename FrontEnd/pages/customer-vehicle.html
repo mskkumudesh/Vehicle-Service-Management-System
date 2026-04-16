@@ -55,8 +55,23 @@
     const BASE_URL = "http://localhost:8080/api/v1/vehicle";
 
     const token = localStorage.getItem("token");
+    if (!token) {
+        alert("Please log in");
+        window.location.href="/FrontEnd/index.html";
 
-    window.onload = loadVehicles;
+    }
+
+     loadVehicles();
+
+    function selectVehicle(vehicleNumber,brand,category) {
+        document.getElementById("vehicleNumber").value = vehicleNumber;
+        document.getElementById("brand").value = brand;
+        document.getElementById("category").value = category;
+    }
+    function clearForm() {
+        document.getElementById("vehicleForm").reset();
+    }
+
 
     function loadVehicles() {
         fetch(BASE_URL + "/getAllByUser", {
@@ -77,6 +92,17 @@
                     <td>${v.vehicleNumber}</td>
                     <td>${v.brand}</td>
                     <td>${v.category}</td>
+                    <th>
+                <button class="btn btn-sm btn-info"
+                        onclick="selectVehicle('${v.vehicleNumber}','${v.brand}','${v.category}')">
+                    Edit
+                </button>
+
+                <button class="btn btn-sm btn-danger"
+                        onclick="deleteVehicle('${v.vehicleNumber}')">
+                    Delete
+                </button>
+            </th>
                 </tr>
                 `;
                 });
@@ -91,20 +117,42 @@
         const vehicle = {
             vehicleNumber: document.getElementById("vehicleNumber").value,
             brand: document.getElementById("brand").value,
-            category: document.getElementById("category").value,
-            userId: USER_ID
+            category: document.getElementById("category").value
         };
 
         fetch(BASE_URL + "/save", {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Authorization": "Bearer " + token ,
+                "Content-Type": "application/json"},
             body: JSON.stringify(vehicle)
         })
-            .then(() => {
-                alert("Vehicle added!");
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
                 loadVehicles();
+                clearForm();
             });
     });
+    function deleteVehicle(vehicleNumber) {
+
+        if (!vehicleNumber) {
+            alert("Invalid vehicle number");
+            return;
+        }
+
+        fetch(`${BASE_URL}/delete/${vehicleNumber}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                loadVehicles();
+            })
+            .catch(err => console.error(err));
+    }
 
 </script>
 

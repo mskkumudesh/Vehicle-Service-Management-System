@@ -21,8 +21,13 @@ public class UserController {
 
     @PostMapping("/save")
     public ResponseEntity<APIResponse<String>> saveUser(@Valid @RequestBody UserDTO userDTO) {
-        userService.saveUser(userDTO);
-        return new ResponseEntity<>(new APIResponse<>(201,"User saved",null), HttpStatus.CREATED);
+        if (userService.isExists(userDTO.getEmail())) {
+            userService.updateUser(userDTO);
+            return new ResponseEntity<>(new APIResponse<>(200,"User updated",null), HttpStatus.OK);
+        }else {
+            userService.saveUser(userDTO);
+            return new ResponseEntity<>(new APIResponse<>(201, "User saved", null), HttpStatus.CREATED);
+        }
     }
 
     @PutMapping("/update")

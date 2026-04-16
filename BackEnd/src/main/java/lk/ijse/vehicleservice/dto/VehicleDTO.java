@@ -10,12 +10,10 @@ import lombok.*;
 @Setter
 @ToString
 public class VehicleDTO {
-    @NotNull(message = "VehicleId is required")
     @Positive(message = "VehicleId must be greater than 0")
-    private int vehicleId;
-    @NotNull(message = "UserId is required")
+    private Integer vehicleId;
     @Positive(message = "UserId must be greater than 0")
-    private int userId;
+    private Integer userId;
     @NotBlank(message = "Vehicle number is required")
     @Pattern(regexp = "^[A-Z]{2,3}\\d{4}$",message = "Invalid vehicle number")
     private String vehicleNumber;
