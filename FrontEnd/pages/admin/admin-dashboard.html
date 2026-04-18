@@ -41,12 +41,12 @@
             <h4 class="text-center">Admin</h4>
             <hr>
             <a href="#">Dashboard</a>
-            <a href="/FrontEnd/pages/admin/customer.html">Customers</a>
-            <a href="/FrontEnd/pages/admin/vehicle.html">Vehicles</a>
-            <a href="/FrontEnd/pages/admin/booking.html">Bookings</a>
-            <a href="/FrontEnd/pages/admin/payment.html">Payments</a>
-            <a href="/FrontEnd/pages/admin/service.html">Services</a>
-            <a href="/FrontEnd/pages/login.html">Logout</a>
+            <a href="/FrontEnd/pages/admin/customer.html" target="_blank">Customers</a>
+            <a href="/FrontEnd/pages/admin/vehicle.html" target="_blank">Vehicles</a>
+            <a href="/FrontEnd/pages/admin/booking.html" target="_blank">Bookings</a>
+            <a href="/FrontEnd/pages/admin/payment.html" target="_blank">Payments</a>
+            <a href="/FrontEnd/pages/admin/service.html" target="_blank">Services</a>
+            <a href="/FrontEnd/pages/login.html" target="_blank">Logout</a>
         </div>
 
         <!-- Main Content -->
@@ -55,7 +55,7 @@
             <!-- Navbar -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3>Dashboard</h3>
-                <button class="btn btn-danger" onclick="window.location.href='/FrontEnd/pages/login.html'">
+                <button class="btn btn-danger" onclick="window.location.href='/FrontEnd/pages/login.html'" >
                     Logout
                 </button>
             </div>
@@ -119,7 +119,7 @@
         const BASE_URL = "http://localhost:8080/api/v1";
 
         try {
-            const customers = await fetch(`${BASE_URL}/user/getAll`).then(res => res.json());
+            const customers = await fetch(`${BASE_URL}/user/getAllCustomers`).then(res => res.json());
             const vehicles = await fetch(`${BASE_URL}/vehicle/getAll`).then(res => res.json());
             const bookings = await fetch(`${BASE_URL}/booking/getAll`).then(res => res.json());
             const payments = await fetch(`${BASE_URL}/payment/getAll`).then(res => res.json());

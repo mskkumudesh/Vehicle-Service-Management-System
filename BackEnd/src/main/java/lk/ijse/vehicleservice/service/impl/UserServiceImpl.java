@@ -120,6 +120,13 @@ public class UserServiceImpl implements UserService {
                 .map(user -> modelMapper.map(user, UserDTO.class))
                 .collect(Collectors.toList());
     }
+    @Override
+    public List<UserDTO> getAllCustomers() {
+        return userRepository.findAllByRoleEquals(Role.Customer)
+                .stream()
+                .map(user -> modelMapper.map(user, UserDTO.class))
+                .collect(Collectors.toList());
+    }
 
     @Override
     public UserDTO getUserById(int id) {

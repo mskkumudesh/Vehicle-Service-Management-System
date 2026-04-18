@@ -54,6 +54,12 @@ public class UserController {
         return  new ResponseEntity<>(new APIResponse<>(200,"User list",list), HttpStatus.OK);
     }
 
+    @GetMapping("/getAllCustomers")
+    public ResponseEntity<APIResponse<List<UserDTO>>> getAllCustomers() {
+        List<UserDTO> list = userService.getAllCustomers();
+        return  new ResponseEntity<>(new APIResponse<>(200,"User list",list), HttpStatus.OK);
+    }
+
     @GetMapping("/findById/{id}")
     public ResponseEntity<APIResponse<UserDTO>> getUserById(@PathVariable int id) {
         UserDTO userDTO = userService.getUserById(id);

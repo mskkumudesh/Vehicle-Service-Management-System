@@ -8,7 +8,6 @@ import java.util.List;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Integer> {
-    List<Payment> findAllByBooking_Vehicle_User_UserId(Integer id);
 
     List<Payment> findAllByBooking_Vehicle_User_Email(String email);
 }

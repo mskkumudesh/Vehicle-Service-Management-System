@@ -23,6 +23,8 @@ public interface UserService {
 
     List<UserDTO> getAllUsers();
 
+    List<UserDTO> getAllCustomers();
+
     UserDTO getUserById(int id);
 
     boolean isExists(String email);
