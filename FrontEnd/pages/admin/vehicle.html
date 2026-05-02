@@ -153,8 +153,8 @@
             userId: document.getElementById("userId").value
         };
 
-        fetch(BASE_URL + "/update", {
-            method: "PUT",
+        fetch(BASE_URL + "/admin/save", {
+            method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(vehicle)
         })

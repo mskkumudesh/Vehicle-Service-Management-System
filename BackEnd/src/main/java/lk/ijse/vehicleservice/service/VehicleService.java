@@ -9,7 +9,11 @@ public interface VehicleService {
 
     void addVehicle(String email,VehicleDTO dto);
 
-    void updateVehicle(String email,VehicleDTO dto);
+    void addVehicle(VehicleDTO dto);
+
+    void updateVehicle(String email, VehicleDTO dto);
+
+    void updateVehicle(VehicleDTO dto);
 
     VehicleDTO searchVehicle(int id);
 

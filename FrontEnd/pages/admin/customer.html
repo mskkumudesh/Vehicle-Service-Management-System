@@ -65,6 +65,7 @@
         <table class="table table-striped mt-3">
             <thead class="table-dark">
             <tr>
+                <th>User ID</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Username</th>
@@ -98,7 +99,6 @@
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-           //     "Authorization": "Bearer " + localStorage.getItem("token")
             }
         })
             .then(res => {
@@ -114,6 +114,7 @@
                 data.data.forEach(c => {
                     table.innerHTML += `
     <tr>
+        <td>${c.id}</td>
         <td>${c.name}</td>
         <td>${c.email}</td>
         <td>${c.username}</td>

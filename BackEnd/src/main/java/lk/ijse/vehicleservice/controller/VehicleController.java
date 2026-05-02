@@ -5,6 +5,7 @@ import lk.ijse.vehicleservice.dto.VehicleDTO;
 import lk.ijse.vehicleservice.service.VehicleService;
 import lk.ijse.vehicleservice.util.APIResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +37,20 @@ public class VehicleController {
            System.out.println(email);
            vehicleService.addVehicle(email, dto);
            return ResponseEntity.ok(
-                   new APIResponse<>(201, "Vehicle Added Successfully", null)
+                   new APIResponse<>(200, "Vehicle Added Successfully", null)
            );
+       }
+    }
+
+    @PostMapping("/admin/save")
+    public ResponseEntity<APIResponse<String>> addVehicle(@RequestBody @Valid VehicleDTO dto) {
+       if (vehicleService.isExists(dto.getVehicleNumber())) {
+           System.out.println("Vehicle already exists");
+           vehicleService.updateVehicle(dto);
+           return new ResponseEntity<>(new APIResponse<>(200, "Vehicle Updated Successfully", null), HttpStatus.OK);
+       }else  {
+           vehicleService.addVehicle(dto);
+           return new ResponseEntity<>(new APIResponse<>(200, "Vehicle Added Successfully", null), HttpStatus.OK);
        }
     }
 

@@ -10,7 +10,7 @@ import lombok.Setter;
     @AllArgsConstructor
     @NoArgsConstructor
     public class AuthResponseDTO {
-        private String access_token;
+        private String token;
         private String role;
     }
 

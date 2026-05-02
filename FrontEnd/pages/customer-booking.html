@@ -34,6 +34,7 @@
                 <div class="col-md-3 mb-3">
                     <label>Date</label>
                     <input type="date" id="bookingDate" class="form-control" required>
+                    <small id="dateError" style="color: red"></small>
                 </div>
 
                 <div class="col-md-3 mb-3">
@@ -83,6 +84,11 @@
 <script>
     const BASE_URL = "http://localhost:8080/api/v1";
     const token = localStorage.getItem("token");
+
+    function clearForm() {
+        document.getElementById("bookingForm").reset();
+        document.getElementById("dateError").innerText = "";
+    }
 
     function loadVehicles() {
 
@@ -153,15 +159,22 @@
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(booking)
         })
-
-            .then(() => {
-                alert("✅ Booking Created");
-                document.getElementById("bookingForm").reset();
-                loadBookings();
+            .then(async res => {
+                const data = await res.json();
+                if (res.status===409) {
+                    document.getElementById("dateError").innerText = data.message;
+                    loadBookings();
+                    return
+                }if(res.status===400) {
+                    document.getElementById("dateError").innerText = data.bookingDate;
+                    loadBookings();
+                    return
+                }if(res.status===200||res.status===201) {
+                    alert("✅ Booking Created");
+                    clearForm();
+                    loadBookings();
+                }
             })
-            .catch(() => {
-                alert(" Booking Failed");
-            });
     });
 
     let paymentsList = [];

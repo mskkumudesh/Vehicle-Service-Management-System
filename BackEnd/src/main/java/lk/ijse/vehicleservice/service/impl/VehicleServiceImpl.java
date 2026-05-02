@@ -3,6 +3,7 @@ package lk.ijse.vehicleservice.service.impl;
 import lk.ijse.vehicleservice.dto.VehicleDTO;
 import lk.ijse.vehicleservice.entity.User;
 import lk.ijse.vehicleservice.entity.Vehicle;
+import lk.ijse.vehicleservice.exception.custom.DuplicateException;
 import lk.ijse.vehicleservice.exception.custom.NotFoundException;
 import lk.ijse.vehicleservice.repository.UserRepository;
 import lk.ijse.vehicleservice.repository.VehicleRepository;
@@ -10,6 +11,7 @@ import lk.ijse.vehicleservice.service.VehicleService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.List;
 
@@ -39,6 +41,19 @@ public class VehicleServiceImpl implements VehicleService {
 
         vehicleRepository.save(vehicle);
     }
+    @Override
+    public void addVehicle(VehicleDTO dto) {
+        if (vehicleRepository.findByVehicleNumber(dto.getVehicleNumber()).isPresent()) {
+            throw new DuplicateException("Vehicle already exists");
+        }
+        Vehicle vehicle = new Vehicle();
+        vehicle.setVehicleNumber(dto.getVehicleNumber());
+        vehicle.setCategory(dto.getCategory());
+        vehicle.setBrand(dto.getBrand());
+        User user = userRepository.findById(dto.getUserId()).orElseThrow(()->new RuntimeException("User not found in save"));
+        vehicle.setUser(user);
+        vehicleRepository.save(vehicle);
+    }
 
     @Override
     public void updateVehicle(String email,VehicleDTO dto) {
@@ -49,6 +64,18 @@ public class VehicleServiceImpl implements VehicleService {
         vehicle.setCategory(dto.getCategory());
         vehicle.setBrand(dto.getBrand());
         User user = userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User not found in update"));
+        vehicle.setUser(user);
+        vehicleRepository.save(vehicle);
+    }
+
+    @Override
+    public void updateVehicle(VehicleDTO dto){
+        Vehicle vehicle = vehicleRepository.findByVehicleNumber(dto.getVehicleNumber())
+                .orElseThrow(() -> new NotFoundException("vehicle not found"));
+        vehicle.setVehicleNumber(dto.getVehicleNumber());
+        vehicle.setCategory(dto.getCategory());
+        vehicle.setBrand(dto.getBrand());
+        User user = userRepository.findById(dto.getUserId()).orElseThrow(()->new RuntimeException("User not found in update"));
         vehicle.setUser(user);
         vehicleRepository.save(vehicle);
     }

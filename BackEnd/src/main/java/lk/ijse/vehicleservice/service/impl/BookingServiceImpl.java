@@ -4,6 +4,8 @@ import lk.ijse.vehicleservice.dto.BookingDTO;
 import lk.ijse.vehicleservice.entity.Booking;
 import lk.ijse.vehicleservice.entity.Services;
 import lk.ijse.vehicleservice.entity.Vehicle;
+import lk.ijse.vehicleservice.exception.custom.DuplicateException;
+import lk.ijse.vehicleservice.exception.custom.NotFoundException;
 import lk.ijse.vehicleservice.repository.BookingRepository;
 import lk.ijse.vehicleservice.repository.ServiceRepository;
 import lk.ijse.vehicleservice.repository.VehicleRepository;
@@ -34,7 +36,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void addBooking(BookingDTO dto) {
       if (bookingRepository.existsByBookingDateAndVehicle_VehicleNumber(dto.getBookingDate(), dto.getVehicleNumber())) {
-          throw new RuntimeException("booking already exists on given date");
+          throw new DuplicateException("booking already exists on given date");
       }
         Booking booking = new Booking();
         booking.setBookingDate(dto.getBookingDate());
@@ -86,7 +88,7 @@ public class BookingServiceImpl implements BookingService {
 
 
         Vehicle vehicle = vehicleRepository.findByVehicleNumber(dto.getVehicleNumber())
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+                .orElseThrow(() -> new NotFoundException("Vehicle not found"));
         booking.setVehicle(vehicle);
 
 
@@ -96,7 +98,7 @@ public class BookingServiceImpl implements BookingService {
 
         List<Services> services = dto.getServiceDTOs().stream()
                 .map(s -> serviceRepository.findById(s.getServiceId())
-                        .orElseThrow(() -> new RuntimeException("Service not found")))
+                        .orElseThrow(() -> new NotFoundException("Service not found")))
                 .collect(Collectors.toList());
 
         booking.setServiceDTOs(services);

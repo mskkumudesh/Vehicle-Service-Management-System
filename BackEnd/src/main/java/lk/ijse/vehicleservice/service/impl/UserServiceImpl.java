@@ -37,10 +37,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public AuthResponseDTO login(LoginDTO loginDTO) {
         User user = userRepository.findByEmail(loginDTO.getEmail()).orElseThrow(
-                () -> new RuntimeException("Email not found")
+                () -> new NotFoundException("Account Not Found with given email")
         );
         if(!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("Wrong password");
+            throw new BadCredentialsException("Invalid Username or password");
         }
 
         String token = jwtUtil.generateToken(loginDTO.getEmail());
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO createAccount(RegisterDTO dto) {
 
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            throw new DuplicateException("Email already exists");
         }
 
         User user = new User();
